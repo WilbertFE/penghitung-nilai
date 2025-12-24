@@ -20,6 +20,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Eye, EyeClosed } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z
@@ -47,26 +49,42 @@ export default function SignUpPage() {
       confirmPassword: "",
     },
   });
+  const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(true);
+
+  // function handlePassword(value: string) {
+  //   if(isPasswordOpen){
+
+  //     setIsPasswordOpen(false);
+  //   } else {
+
+  //   }
+  // }
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     console.log("data : ", data.username);
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    });
+    if (data.password !== data.confirmPassword) {
+      toast.error("Password harus sama!");
+    } else {
+      toast("You submitted the following values:", {
+        description: (
+          <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
+            <code>{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+        position: "bottom-right",
+        classNames: {
+          content: "flex flex-col gap-2",
+        },
+        style: {
+          "--border-radius": "calc(var(--radius)  + 4px)",
+        } as React.CSSProperties,
+      });
+      toast.success("Akun berhasil dibuat");
+      form.reset();
+    }
   }
   return (
-    <Card className="w-full sm:max-w-md mx-auto">
+    <Card className="w-full sm:max-w-md mx-auto bg-white text-my-text my-12">
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
         <CardDescription>Buat akun baru.</CardDescription>
@@ -79,12 +97,10 @@ export default function SignUpPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-username">
-                    Username
-                  </FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Username</FieldLabel>
                   <Input
                     {...field}
-                    id="form-rhf-demo-username"
+                    id={field.name}
                     aria-invalid={fieldState.invalid}
                     placeholder="Masukkan username anda."
                     autoComplete="off"
@@ -100,10 +116,10 @@ export default function SignUpPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-email">Email</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                   <Input
                     {...field}
-                    id="form-rhf-demo-email"
+                    id={field.name}
                     aria-invalid={fieldState.invalid}
                     placeholder="Masukkan email anda."
                     autoComplete="off"
@@ -120,16 +136,28 @@ export default function SignUpPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-password">
-                    Password
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="form-rhf-demo-password"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Masukkan password anda."
-                    autoComplete="off"
-                  />
+                  <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                  <div className="flex w-full max-w-sm items-center gap-2">
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Masukkan password anda."
+                      autoComplete="off"
+                      value={
+                        isPasswordOpen
+                          ? field.value
+                          : "*".repeat(field.value.length)
+                      }
+                    />
+                    <Button
+                      onClick={() => setIsPasswordOpen(!isPasswordOpen)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {isPasswordOpen ? <Eye /> : <EyeClosed />}
+                    </Button>
+                  </div>
 
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -142,16 +170,30 @@ export default function SignUpPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-confirmPassword">
+                  <FieldLabel htmlFor={field.name}>
                     Konfirmasi Password
                   </FieldLabel>
-                  <Input
-                    {...field}
-                    id="form-rhf-demo-confirmPassword"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Ulangi password anda."
-                    autoComplete="off"
-                  />
+                  <div className="flex w-full max-w-sm items-center gap-2">
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Ulangi password anda."
+                      autoComplete="off"
+                      value={
+                        isPasswordOpen
+                          ? field.value
+                          : "*".repeat(field.value.length)
+                      }
+                    />
+                    <Button
+                      onClick={() => setIsPasswordOpen(isPasswordOpen)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {isPasswordOpen ? <Eye /> : <EyeClosed />}
+                    </Button>
+                  </div>
 
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -165,13 +207,24 @@ export default function SignUpPage() {
       <CardFooter>
         <Field orientation="horizontal">
           <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
+            Ulangi
           </Button>
           <Button type="submit" form="form-rhf-demo">
-            Submit
+            Buat akun
           </Button>
         </Field>
       </CardFooter>
     </Card>
+  );
+}
+
+export function InputWithButton() {
+  return (
+    <div className="flex w-full max-w-sm items-center gap-2">
+      <Input type="email" placeholder="Email" />
+      <Button type="submit" variant="outline">
+        Subscribe
+      </Button>
+    </div>
   );
 }

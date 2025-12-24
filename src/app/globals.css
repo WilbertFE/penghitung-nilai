@@ -123,3 +123,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme {
+  --color-my-primary: #0766ad;
+  --color-my-secondary: #29adb2;
+  --color-my-growth: #c5e898;
+  --color-my-background: #f3f3f3;
+  --color-my-text: #0f172a;
+}
