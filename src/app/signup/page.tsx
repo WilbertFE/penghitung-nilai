@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
+import zxcvbn from "zxcvbn";
 
 const formSchema = z.object({
   username: z
@@ -50,15 +51,15 @@ export default function SignUpPage() {
     },
   });
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(true);
+  const [passwordStrength, setPasswordStrength] = useState<number>(0);
+  const [passwordSuggestion, setPasswordSuggestion] = useState<string[]>([]);
 
-  // function handlePassword(value: string) {
-  //   if(isPasswordOpen){
-
-  //     setIsPasswordOpen(false);
-  //   } else {
-
-  //   }
-  // }
+  function handlePasswordStrength(password: string) {
+    const evaluation = zxcvbn(password);
+    console.log("evaluation : ", evaluation);
+    setPasswordStrength(evaluation.score);
+    setPasswordSuggestion(evaluation.feedback.suggestions);
+  }
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     console.log("data : ", data.username);
@@ -80,6 +81,8 @@ export default function SignUpPage() {
         } as React.CSSProperties,
       });
       toast.success("Akun berhasil dibuat");
+      setPasswordStrength(0);
+      setPasswordSuggestion([]);
       form.reset();
     }
   }
@@ -144,11 +147,11 @@ export default function SignUpPage() {
                       aria-invalid={fieldState.invalid}
                       placeholder="Masukkan password anda."
                       autoComplete="off"
-                      value={
-                        isPasswordOpen
-                          ? field.value
-                          : "*".repeat(field.value.length)
-                      }
+                      type={isPasswordOpen ? "text" : "password"}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handlePasswordStrength(e.target.value);
+                      }}
                     />
                     <Button
                       onClick={() => setIsPasswordOpen(!isPasswordOpen)}
@@ -158,6 +161,36 @@ export default function SignUpPage() {
                       {isPasswordOpen ? <Eye /> : <EyeClosed />}
                     </Button>
                   </div>
+                  <div className="mt-2">
+                    <div className="h-2 w-full bg-gray-200 rounded-full">
+                      <div
+                        className={`h-2 rounded-full ${
+                          passwordStrength === 0
+                            ? "bg-red-500"
+                            : passwordStrength === 1
+                            ? "bg-orange-500"
+                            : passwordStrength === 2
+                            ? "bg-yellow-500"
+                            : passwordStrength >= 3
+                            ? "bg-green-500"
+                            : "bg-green-700"
+                        }`}
+                        style={{ width: `${(passwordStrength + 1) * 25}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  {passwordSuggestion.length > 0 && (
+                    <ul className="mt-2">
+                      {passwordSuggestion.map((suggestion, index) => (
+                        <li
+                          key={index}
+                          className="text-sm text-gray-600 list-inside list-disc"
+                        >
+                          {suggestion}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -180,11 +213,7 @@ export default function SignUpPage() {
                       aria-invalid={fieldState.invalid}
                       placeholder="Ulangi password anda."
                       autoComplete="off"
-                      value={
-                        isPasswordOpen
-                          ? field.value
-                          : "*".repeat(field.value.length)
-                      }
+                      type={isPasswordOpen ? "text" : "password"}
                     />
                     <Button
                       onClick={() => setIsPasswordOpen(isPasswordOpen)}
@@ -206,7 +235,15 @@ export default function SignUpPage() {
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              form.reset();
+              setPasswordStrength(0);
+              setPasswordSuggestion([]);
+            }}
+          >
             Ulangi
           </Button>
           <Button type="submit" form="form-rhf-demo">
