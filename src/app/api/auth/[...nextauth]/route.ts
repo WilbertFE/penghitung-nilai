@@ -22,19 +22,29 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<any> {
-        // console.log("credentials: ", credentials);
+        console.log("credentials: ", credentials);
 
-        const user = {
-          uuid: uuidv4(),
-          username: credentials?.username,
-          email: credentials?.email,
-          password: credentials?.password,
-          role: "user",
-        };
+        if (credentials) {
+          const salt = await bcrypt.genSalt(10);
+          const hash = await bcrypt.hash(credentials.password, salt);
 
-        if (user) {
-          // console.log("success");
-          return user;
+          const user = {
+            uuid: uuidv4(),
+            username: credentials.username,
+            email: credentials.email,
+            password: hash,
+            role: "user",
+            type: "credentials",
+          };
+
+          const { error } = await supabase.from("users").insert(user);
+
+          if (error) {
+            console.log(error);
+            return null;
+          } else {
+            return user;
+          }
         } else {
           return null;
         }
@@ -43,30 +53,11 @@ const handler = NextAuth({
   ],
 
   callbacks: {
-    async jwt({ token, account, user, trigger }: any) {
-      // console.log("account : ", account);
-      // console.log("profile : ", profile);
-      // console.log("user : ", user);
-      // console.log("trigger: ", trigger);
-
-      if (trigger === "signIn") {
-        if (account?.provider === "credentials") {
-          const salt = await bcrypt.genSalt(10);
-          const hash = await bcrypt.hash(user.password, salt);
-
-          // console.log("hashed : ", hash);
-          const { data, error } = await supabase
-            .from("users")
-            .insert({ ...user, type: "credentials", password: hash })
-            .select();
-          if (error) console.log(error);
-          else {
-            // console.log("insert data");
-            // console.log("data : ", data);
-            token.username = data[0].username;
-            token.role = data[0].role;
-          }
-        }
+    async jwt({ token, user }: any) {
+      if (user) {
+        token.username = user.username;
+        token.role = user.role;
+        token.email = user.email;
       }
       return token;
     },
