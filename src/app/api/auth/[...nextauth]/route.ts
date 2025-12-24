@@ -22,8 +22,6 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<any> {
-        console.log("credentials: ", credentials);
-
         if (credentials) {
           const salt = await bcrypt.genSalt(10);
           const hash = await bcrypt.hash(credentials.password, salt);
@@ -43,7 +41,9 @@ const handler = NextAuth({
             console.log(error);
             return null;
           } else {
-            return user;
+            const userData: any = { ...user };
+            delete userData.password;
+            return userData;
           }
         } else {
           return null;
@@ -51,7 +51,6 @@ const handler = NextAuth({
       },
     }),
   ],
-
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
