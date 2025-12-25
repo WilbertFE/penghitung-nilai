@@ -92,170 +92,172 @@ export default function SignUpPage() {
     form.reset();
   }
   return (
-    <Card className="w-full sm:max-w-md mx-auto bg-white text-my-text my-12">
-      <CardHeader>
-        <CardTitle>Sign Up</CardTitle>
-        <CardDescription>Buat akun baru.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Controller
-              name="username"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Username</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Masukkan username anda."
-                    autoComplete="username"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="email"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Masukkan email anda."
-                    autoComplete="email"
-                  />
-
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                  <div className="flex w-full max-w-sm items-center gap-2">
+    <div className="container mx-auto">
+      <Card className="w-full sm:max-w-md mx-auto bg-white text-my-text my-12">
+        <CardHeader>
+          <CardTitle>Sign Up</CardTitle>
+          <CardDescription>Buat akun baru.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldGroup>
+              <Controller
+                name="username"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Username</FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
-                      placeholder="Masukkan password anda."
-                      autoComplete="new-password"
-                      type={isPasswordOpen ? "text" : "password"}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        handlePasswordStrength(e.target.value);
-                      }}
+                      placeholder="Masukkan username anda."
+                      autoComplete="username"
                     />
-                    <Button
-                      onClick={() => setIsPasswordOpen(!isPasswordOpen)}
-                      type="button"
-                      variant="outline"
-                    >
-                      {isPasswordOpen ? <Eye /> : <EyeClosed />}
-                    </Button>
-                  </div>
-                  <div className="mt-2">
-                    <div className="h-2 w-full bg-gray-200 rounded-full">
-                      <div
-                        className={`h-2 rounded-full ${
-                          passwordStrength === 0
-                            ? "bg-transparent"
-                            : passwordStrength === 1
-                            ? "bg-red-500"
-                            : passwordStrength === 2
-                            ? "bg-orange-500"
-                            : passwordStrength === 3
-                            ? "bg-green-500"
-                            : "bg-green-700"
-                        }`}
-                        style={{ width: `${passwordStrength * 25}%` }}
-                      ></div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Masukkan email anda."
+                      autoComplete="email"
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                    <div className="flex w-full max-w-sm items-center gap-2">
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Masukkan password anda."
+                        autoComplete="new-password"
+                        type={isPasswordOpen ? "text" : "password"}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handlePasswordStrength(e.target.value);
+                        }}
+                      />
+                      <Button
+                        onClick={() => setIsPasswordOpen(!isPasswordOpen)}
+                        type="button"
+                        variant="outline"
+                      >
+                        {isPasswordOpen ? <Eye /> : <EyeClosed />}
+                      </Button>
                     </div>
-                  </div>
-                  {passwordSuggestion.length > 0 && (
-                    <ul className="mt-2">
-                      {passwordSuggestion.map((suggestion, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-gray-600 list-inside list-disc"
-                        >
-                          {suggestion}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                    <div className="mt-2">
+                      <div className="h-2 w-full bg-gray-200 rounded-full">
+                        <div
+                          className={`h-2 rounded-full ${
+                            passwordStrength === 0
+                              ? "bg-transparent"
+                              : passwordStrength === 1
+                              ? "bg-red-500"
+                              : passwordStrength === 2
+                              ? "bg-orange-500"
+                              : passwordStrength === 3
+                              ? "bg-green-500"
+                              : "bg-green-700"
+                          }`}
+                          style={{ width: `${passwordStrength * 25}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    {passwordSuggestion.length > 0 && (
+                      <ul className="mt-2">
+                        {passwordSuggestion.map((suggestion, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-600 list-inside list-disc"
+                          >
+                            {suggestion}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
 
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="confirmPassword"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Konfirmasi Password
-                  </FieldLabel>
-                  <div className="flex w-full max-w-sm items-center gap-2">
-                    <Input
-                      {...field}
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Ulangi password anda."
-                      autoComplete="new-password"
-                      type={isPasswordOpen ? "text" : "password"}
-                    />
-                    <Button
-                      onClick={() => setIsPasswordOpen(!isPasswordOpen)}
-                      type="button"
-                      variant="outline"
-                    >
-                      {isPasswordOpen ? <Eye /> : <EyeClosed />}
-                    </Button>
-                  </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="confirmPassword"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Konfirmasi Password
+                    </FieldLabel>
+                    <div className="flex w-full max-w-sm items-center gap-2">
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Ulangi password anda."
+                        autoComplete="new-password"
+                        type={isPasswordOpen ? "text" : "password"}
+                      />
+                      <Button
+                        onClick={() => setIsPasswordOpen(!isPasswordOpen)}
+                        type="button"
+                        variant="outline"
+                      >
+                        {isPasswordOpen ? <Eye /> : <EyeClosed />}
+                      </Button>
+                    </div>
 
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              form.reset();
-              setPasswordStrength(0);
-              setPasswordSuggestion([]);
-            }}
-          >
-            Ulangi
-          </Button>
-          <Button type="submit" form="form-rhf-demo">
-            Buat akun
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <Field orientation="horizontal">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                form.reset();
+                setPasswordStrength(0);
+                setPasswordSuggestion([]);
+              }}
+            >
+              Ulangi
+            </Button>
+            <Button type="submit" form="form-rhf-demo">
+              Buat akun
+            </Button>
+          </Field>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
