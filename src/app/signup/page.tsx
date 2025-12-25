@@ -166,16 +166,16 @@ export default function SignUpPage() {
                       <div
                         className={`h-2 rounded-full ${
                           passwordStrength === 0
-                            ? "bg-red-500"
+                            ? "bg-transparent"
                             : passwordStrength === 1
-                            ? "bg-orange-500"
+                            ? "bg-red-500"
                             : passwordStrength === 2
-                            ? "bg-yellow-500"
-                            : passwordStrength >= 3
+                            ? "bg-orange-500"
+                            : passwordStrength === 3
                             ? "bg-green-500"
                             : "bg-green-700"
                         }`}
-                        style={{ width: `${(passwordStrength + 1) * 25}%` }}
+                        style={{ width: `${passwordStrength * 25}%` }}
                       ></div>
                     </div>
                   </div>
