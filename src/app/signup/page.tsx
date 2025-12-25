@@ -24,21 +24,29 @@ import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import zxcvbn from "zxcvbn";
 
-const formSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username harus setidaknya 3 karakter.")
-    .max(32, "Username paling banyak 32 karakter."),
-  email: z.email("Email tidak valid."),
-  password: z
-    .string()
-    .min(8, "Password harus setidaknya 8 karakter.")
-    .max(64, "Password paling banyak 64 karakter."),
-  confirmPassword: z
-    .string()
-    .min(8, "Password harus setidaknya 8 karakter.")
-    .max(64, "Password paling banyak 64 karakter."),
-});
+const formSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, "Username harus setidaknya 3 karakter.")
+      .max(32, "Username paling banyak 32 karakter."),
+    email: z.email("Email tidak valid."),
+    password: z
+      .string()
+      .min(8, "Password harus setidaknya 8 karakter.")
+      .max(64, "Password paling banyak 64 karakter.")
+      .refine((value) => zxcvbn(value).score >= 3, {
+        message: "Password terlalu lemah.",
+      }),
+    confirmPassword: z
+      .string()
+      .min(8, "Password harus setidaknya 8 karakter.")
+      .max(64, "Password paling banyak 64 karakter."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password dan konfirmasi password harus sama.",
+    path: ["confirmPassword"],
+  });
 
 export default function SignUpPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,41 +58,38 @@ export default function SignUpPage() {
       confirmPassword: "",
     },
   });
-  const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(true);
+  const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordSuggestion, setPasswordSuggestion] = useState<string[]>([]);
 
   function handlePasswordStrength(password: string) {
     const evaluation = zxcvbn(password);
-    console.log("evaluation : ", evaluation);
+    // console.log("evaluation : ", evaluation);
     setPasswordStrength(evaluation.score);
     setPasswordSuggestion(evaluation.feedback.suggestions);
   }
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log("data : ", data.username);
-    if (data.password !== data.confirmPassword) {
-      toast.error("Password harus sama!");
-    } else {
-      toast("You submitted the following values:", {
-        description: (
-          <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-            <code>{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-        position: "bottom-right",
-        classNames: {
-          content: "flex flex-col gap-2",
-        },
-        style: {
-          "--border-radius": "calc(var(--radius)  + 4px)",
-        } as React.CSSProperties,
-      });
-      toast.success("Akun berhasil dibuat");
-      setPasswordStrength(0);
-      setPasswordSuggestion([]);
-      form.reset();
-    }
+    // console.log("data : ", data.username);
+
+    toast("You submitted the following values:", {
+      description: (
+        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
+          <code>{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+      position: "bottom-right",
+      classNames: {
+        content: "flex flex-col gap-2",
+      },
+      style: {
+        "--border-radius": "calc(var(--radius)  + 4px)",
+      } as React.CSSProperties,
+    });
+    toast.success("Akun berhasil dibuat");
+    setPasswordStrength(0);
+    setPasswordSuggestion([]);
+    form.reset();
   }
   return (
     <Card className="w-full sm:max-w-md mx-auto bg-white text-my-text my-12">
@@ -106,7 +111,7 @@ export default function SignUpPage() {
                     id={field.name}
                     aria-invalid={fieldState.invalid}
                     placeholder="Masukkan username anda."
-                    autoComplete="off"
+                    autoComplete="username"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -125,7 +130,7 @@ export default function SignUpPage() {
                     id={field.name}
                     aria-invalid={fieldState.invalid}
                     placeholder="Masukkan email anda."
-                    autoComplete="off"
+                    autoComplete="email"
                   />
 
                   {fieldState.invalid && (
@@ -146,7 +151,7 @@ export default function SignUpPage() {
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       placeholder="Masukkan password anda."
-                      autoComplete="off"
+                      autoComplete="new-password"
                       type={isPasswordOpen ? "text" : "password"}
                       onChange={(e) => {
                         field.onChange(e);
@@ -212,11 +217,11 @@ export default function SignUpPage() {
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       placeholder="Ulangi password anda."
-                      autoComplete="off"
+                      autoComplete="new-password"
                       type={isPasswordOpen ? "text" : "password"}
                     />
                     <Button
-                      onClick={() => setIsPasswordOpen(isPasswordOpen)}
+                      onClick={() => setIsPasswordOpen(!isPasswordOpen)}
                       type="button"
                       variant="outline"
                     >
