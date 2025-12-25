@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import zxcvbn from "zxcvbn";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 const formSchema = z
   .object({
@@ -64,36 +65,19 @@ export default function SignUpPage() {
 
   function handlePasswordStrength(password: string) {
     const evaluation = zxcvbn(password);
-    // console.log("evaluation : ", evaluation);
     setPasswordStrength(evaluation.score);
     setPasswordSuggestion(evaluation.feedback.suggestions);
   }
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    // console.log("data : ", data.username);
-
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    });
-    toast.success("Akun berhasil dibuat");
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    await signIn("credentials", { callbackUrl: "/", ...data, redirect: false });
     setPasswordStrength(0);
     setPasswordSuggestion([]);
     form.reset();
   }
   return (
-    <div className="container mx-auto">
-      <Card className="w-full sm:max-w-md mx-auto bg-white text-my-text my-12">
+    <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
+      <Card className="w-full sm:max-w-md bg-white text-my-text my-12">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
           <CardDescription>Buat akun baru.</CardDescription>
@@ -239,7 +223,7 @@ export default function SignUpPage() {
             </FieldGroup>
           </form>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-col justify-start gap-y-4">
           <Field orientation="horizontal">
             <Button
               type="button"
@@ -256,6 +240,13 @@ export default function SignUpPage() {
               Buat akun
             </Button>
           </Field>
+          <p className="w-full text-my-text">
+            Sudah punya akun?{" "}
+            <Link href="/signin" className="text-my-primary underline">
+              Login
+            </Link>{" "}
+            di sini.
+          </p>
         </CardFooter>
       </Card>
     </div>
