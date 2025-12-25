@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,19 +20,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import zxcvbn from "zxcvbn";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.email("Email tidak valid."),
-  password: z
-    .string()
-    .min(8, "Password harus setidaknya 8 karakter.")
-    .max(64, "Password paling banyak 64 karakter.")
-    .refine((value) => zxcvbn(value).score >= 3, {
-      message: "Password terlalu lemah.",
-    }),
+  password: z.string().min(1, "Password wajib diisi."),
 });
 export default function SignInPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,8 +39,17 @@ export default function SignInPage() {
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    await signIn("credentials", { callbackUrl: "/", ...data, redirect: false });
-    form.reset();
+    const result = await signIn("credentials", {
+      callbackUrl: "/",
+      ...data,
+      redirect: false,
+    });
+    if (!result?.ok) {
+      toast.error("Gagal masuk. Periksa kembali email dan password Anda.");
+    } else {
+      toast.success("Berhasil masuk!");
+      form.reset();
+    }
   }
   return (
     <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
