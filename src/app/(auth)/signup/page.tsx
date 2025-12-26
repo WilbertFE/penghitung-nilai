@@ -22,8 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import zxcvbn from "zxcvbn";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z
   .object({
@@ -62,6 +62,7 @@ export default function SignUpPage() {
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordSuggestion, setPasswordSuggestion] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   function handlePasswordStrength(password: string) {
     const evaluation = zxcvbn(password);
@@ -70,10 +71,34 @@ export default function SignUpPage() {
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    await signIn("credentials", { callbackUrl: "/", ...data, redirect: false });
-    setPasswordStrength(0);
-    setPasswordSuggestion([]);
-    form.reset();
+    try {
+      setIsLoading(true);
+
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        toast.error(responseData.message);
+        return setIsLoading(false);
+      }
+
+      toast.success(responseData.message);
+
+      setPasswordStrength(0);
+      setPasswordSuggestion([]);
+      // form.reset();
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   }
   return (
     <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
@@ -228,6 +253,7 @@ export default function SignUpPage() {
             <Button
               type="button"
               variant="outline"
+              disabled={isLoading}
               onClick={() => {
                 form.reset();
                 setPasswordStrength(0);
@@ -236,7 +262,7 @@ export default function SignUpPage() {
             >
               Ulangi
             </Button>
-            <Button type="submit" form="form-rhf-demo">
+            <Button disabled={isLoading} type="submit" form="form-rhf-demo">
               Buat akun
             </Button>
           </Field>

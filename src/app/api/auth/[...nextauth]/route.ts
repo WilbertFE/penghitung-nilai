@@ -46,29 +46,6 @@ const handler = NextAuth({
           console.error("Invalid credentials");
           return null;
         }
-
-        // const salt = await bcrypt.genSalt(10);
-        // const hash = await bcrypt.hash(credentials.password, salt);
-
-        // const user = {
-        //   uuid: uuidv4(),
-        //   username: credentials.username,
-        //   email: credentials.email,
-        //   password: hash,
-        //   role: "user",
-        //   type: "credentials",
-        // };
-
-        // const { error } = await supabase.from("users").insert(user);
-
-        // if (error) {
-        //   console.log(error);
-        //   return null;
-        // } else {
-        //   const userData: any = { ...user };
-        //   delete userData.password;
-        //   return userData;
-        // }
       },
     }),
   ],
