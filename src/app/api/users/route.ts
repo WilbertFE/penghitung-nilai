@@ -7,6 +7,11 @@ import * as z from "zod";
 import zxcvbn from "zxcvbn";
 
 const Schemas = z.object({
+  full_name: z
+    .string()
+    .min(3, "Nama harus setidaknya 3 karakter")
+    .max(64, "Nama paling banyak 64 karakter.")
+    .transform((v) => v.trim()),
   username: z
     .string()
     .min(3, "Username harus setidaknya 3 karakter.")
@@ -39,7 +44,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { email, username, password } = parsed.data;
+  const { email, username, password, full_name } = parsed.data;
 
   // cek apakah user sudah ada berdasarkan email
   const { data: emailData, error: emailError } = await supabase
@@ -97,7 +102,8 @@ export async function POST(request: NextRequest) {
 
   const user = {
     uuid: uuidv4(),
-    username: username,
+    full_name,
+    username,
     email: email,
     password: hash,
     role: "user",

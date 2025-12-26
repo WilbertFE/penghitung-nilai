@@ -27,6 +27,10 @@ import { toast } from "sonner";
 
 const formSchema = z
   .object({
+    full_name: z
+      .string()
+      .min(3, "Nama harus setidaknya 3 karakter")
+      .max(64, "Nama paling banyak 64 karakter."),
     username: z
       .string()
       .min(3, "Username harus setidaknya 3 karakter.")
@@ -53,6 +57,7 @@ export default function SignUpPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      full_name: "",
       username: "",
       email: "",
       password: "",
@@ -93,7 +98,7 @@ export default function SignUpPage() {
 
       setPasswordStrength(0);
       setPasswordSuggestion([]);
-      // form.reset();
+      form.reset();
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -110,6 +115,25 @@ export default function SignUpPage() {
         <CardContent>
           <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
+              <Controller
+                name="full_name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Nama Lengkap</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Masukkan nama lengkap anda."
+                      autoComplete="name"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
               <Controller
                 name="username"
                 control={form.control}
