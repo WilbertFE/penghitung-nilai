@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
     password: hash,
     role: "user",
     type: "credentials",
+    email_verified: false,
   };
 
   const { error: createUserError } = await supabase.from("users").insert(user);
