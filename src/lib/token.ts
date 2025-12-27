@@ -3,7 +3,7 @@ import { getVerificationTokenByEmail } from "@/data/verification-token";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
 
-const generateVerificationToken = async (email: string) => {
+export const generateVerificationToken = async (email: string) => {
   // Generate random token
   const token = uuidv4();
   const expires = new Date().getTime() + 1000 * 60 * 60 * 1; // 1 hours
@@ -16,11 +16,17 @@ const generateVerificationToken = async (email: string) => {
   }
 
   //   create verification token
-  const verificationToken = await supabase.from("tokens").insert({
-    token,
-    email,
-    expires: new Date(expires),
-  });
+  const { data: verificationToken, error } = await supabase
+    .from("tokens")
+    .insert({
+      token,
+      email,
+      expires: new Date(expires),
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
 
   return verificationToken;
 };

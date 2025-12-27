@@ -2,13 +2,15 @@ import supabase from "@/lib/supabase";
 
 export const getVerificationTokenByEmail = async (email: string) => {
   try {
-    const verficationToken = await supabase
+    const { data, error } = await supabase
       .from("tokens")
       .select("*")
       .eq("email", email)
-      .single();
+      .maybeSingle();
 
-    return verficationToken;
+    if (error) throw error;
+
+    return data;
   } catch (error) {
     console.log(error);
   }
