@@ -23,6 +23,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.email("Email tidak valid."),
@@ -37,8 +38,12 @@ export default function SignInPage() {
     },
   });
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+
     const result = await signIn("credentials", {
       callbackUrl: "/",
       ...data,
@@ -49,7 +54,9 @@ export default function SignInPage() {
     } else {
       toast.success("Berhasil masuk!");
       form.reset();
+      router.push("/");
     }
+    setIsLoading(false);
   }
   return (
     <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
@@ -116,10 +123,15 @@ export default function SignInPage() {
         </CardContent>
         <CardFooter className="flex-col justify-start gap-y-4">
           <Field orientation="horizontal">
-            <Button type="reset" variant="outline" onClick={() => form.reset()}>
+            <Button
+              disabled={isLoading}
+              type="reset"
+              variant="outline"
+              onClick={() => form.reset()}
+            >
               Ulangi
             </Button>
-            <Button type="submit" form="form-rhf-demo">
+            <Button disabled={isLoading} type="submit" form="form-rhf-demo">
               Masuk
             </Button>
           </Field>

@@ -28,7 +28,7 @@ const handler = NextAuth({
           .from("users")
           .select("password, username, email, role")
           .eq("email", email)
-          .single();
+          .maybeSingle();
 
         if (error || !data) {
           console.error("Invalid credentials");
@@ -50,6 +50,24 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") {
+        return true;
+      }
+
+      const { data: existingUser, error } = await supabase
+        .from("users")
+        .select("email_verified")
+        .eq("email", user.email)
+        .maybeSingle();
+
+      if (!existingUser?.email_verified) {
+        return false;
+      }
+
+      return true;
+    },
+
     async jwt({ token, user }: any) {
       if (user) {
         token.role = user.role;

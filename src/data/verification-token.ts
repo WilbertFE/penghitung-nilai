@@ -12,6 +12,20 @@ export const getVerificationTokenByEmail = async (email: string) => {
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+  }
+};
+
+export const getVerificationTokenByToken = async (token: string) => {
+  try {
+    const { data: verificationToken } = await supabase
+      .from("tokens")
+      .select("*")
+      .eq("token", token)
+      .maybeSingle();
+
+    return verificationToken;
+  } catch (error) {
+    console.error(error);
   }
 };
