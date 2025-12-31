@@ -91,14 +91,12 @@ export default function SignInPage() {
             <FcGoogle className="text-xl" />
             Masuk dengan Google
           </Button>
-
           {/* Divider */}
           <div className="flex items-center gap-4">
             <Separator className="flex-1" />
             <span className="text-xs text-muted-foreground">ATAU</span>
             <Separator className="flex-1" />
           </div>
-
           {/* Existing Form (TIDAK DIUBAH) */}
           <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
@@ -154,6 +152,14 @@ export default function SignInPage() {
               />
             </FieldGroup>
           </form>
+          <p className="w-full text-my-text">
+            <Link
+              href="/forget-password"
+              className="text-my-primary underline text-sm"
+            >
+              Lupa password?
+            </Link>{" "}
+          </p>
         </CardContent>
 
         <CardFooter className="flex-col justify-start gap-y-4">

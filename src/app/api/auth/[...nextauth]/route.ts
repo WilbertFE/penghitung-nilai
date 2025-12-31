@@ -5,6 +5,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import * as z from "zod";
+
+const Schemas = z.object({
+  email: z
+    .email("Email tidak valid.")
+    .transform((v) => v.toLocaleLowerCase().trim()),
+  password: z.string().min(1, "Password wajib diisi."),
+});
 
 const handler = NextAuth({
   session: {
@@ -24,7 +32,15 @@ const handler = NextAuth({
           return null;
         }
 
-        const email = credentials.email.toLowerCase().trim();
+        const parsed = Schemas.safeParse(credentials);
+
+        if (!parsed.success) {
+          console.error("Invalid credentials format");
+          return null;
+        }
+
+        const email = parsed.data.email;
+        const password = parsed.data.password;
 
         const { data, error } = await supabase
           .from("users")
@@ -37,10 +53,7 @@ const handler = NextAuth({
           return null;
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          data.password
-        );
+        const isPasswordValid = await bcrypt.compare(password, data.password);
         if (isPasswordValid) {
           const { username, email, role, full_name } = data;
           return { username, email, role, full_name };
