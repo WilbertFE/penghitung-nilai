@@ -22,6 +22,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeClosed } from "lucide-react";
 import zxcvbn from "zxcvbn";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -46,6 +47,9 @@ export default function ResetPasswordPage() {
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordSuggestion, setPasswordSuggestion] = useState<string[]>([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,27 +64,28 @@ export default function ResetPasswordPage() {
     try {
       setIsLoading(true);
 
-      const response = await fetch("/api/users/", {
+      const result = await fetch("/api/users/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ password: data.password, token }),
       });
 
-      const responseData = await response.json();
+      const parsedResult = await result.json();
 
-      if (!response.ok) {
-        toast.error(responseData.message);
+      if (!result.ok) {
+        toast.error(parsedResult.message);
         return setIsLoading(false);
       }
 
-      toast.success(responseData.message);
+      toast.success(parsedResult.message);
 
       setPasswordStrength(0);
       setPasswordSuggestion([]);
       form.reset();
       setIsLoading(false);
+      router.push("/signin");
     } catch (error) {
       console.error(error);
       setIsLoading(false);

@@ -57,7 +57,7 @@ export const generatePasswordResetToken = async (email: string) => {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error || !resetPasswordToken) throw error;
 
   return resetPasswordToken;
 };

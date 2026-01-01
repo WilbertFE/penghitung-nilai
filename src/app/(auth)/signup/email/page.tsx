@@ -85,8 +85,6 @@ export default function SignUpWithEmailPage() {
     try {
       setIsLoading(true);
 
-      console.log("Submitting data:", data);
-
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {

@@ -26,10 +26,15 @@ export const newVerification = async (token: string) => {
     if (!existingUser) {
       return { error: "User not found" };
     }
+    const now = new Date();
 
     const { error } = await supabase
       .from("users")
-      .update({ email_verified: new Date(), email: existingToken.email })
+      .update({
+        email_verified: now,
+        email: existingToken.email,
+        updated_at: now,
+      })
       .eq("email", existingUser.email);
 
     const response = await supabase

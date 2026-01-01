@@ -21,10 +21,12 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  email: z.email("Email tidak valid."),
+  email: z
+    .email("Email tidak valid.")
+    .trim()
+    .transform((v) => v.toLowerCase()),
 });
 export default function ForgotPasswordPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,7 +35,6 @@ export default function ForgotPasswordPage() {
       email: "",
     },
   });
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -55,10 +56,10 @@ export default function ForgotPasswordPage() {
       toast.error(parsedResult.message || "Terjadi kesalahan.");
     } else {
       toast.success(
-        "Email reset password berhasil dikirim! Periksa email Anda."
+        parsedResult.message ||
+          "Email reset password berhasil dikirim! Periksa email Anda."
       );
       form.reset();
-      router.push("/");
     }
     setIsLoading(false);
   }

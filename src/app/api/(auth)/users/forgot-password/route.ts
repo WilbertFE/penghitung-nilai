@@ -1,4 +1,6 @@
+import { sendResetPasswordEmail } from "@/lib/reset-password";
 import supabase from "@/lib/supabase";
+import { generatePasswordResetToken } from "@/lib/token";
 import { NextRequest } from "next/server";
 import * as z from "zod";
 
@@ -16,10 +18,30 @@ export async function POST(request: NextRequest) {
     // TODO: Implement forgot password logic here, e.g., send reset email
     const { email } = parseResult.data;
 
-    const existingUser = await supabase
+    const { data: existingUser, error } = await supabase
       .from("users")
       .select("id")
-      .eq("email", email);
+      .eq("email", email)
+      .maybeSingle();
+
+    if (!existingUser || error) {
+      return Response.json(
+        { message: "Email tidak ditemukan." },
+        { status: 400 }
+      );
+    }
+    // Here you would typically generate a reset token and send an email
+
+    const generateResetToken = await generatePasswordResetToken(email);
+
+    if (!generateResetToken) {
+      return Response.json(
+        { message: "Gagal membuat token reset password." },
+        { status: 500 }
+      );
+    }
+
+    await sendResetPasswordEmail(email, generateResetToken.token);
 
     return Response.json(
       { message: `Email reset password telah dikirim ke ${email}.` },
