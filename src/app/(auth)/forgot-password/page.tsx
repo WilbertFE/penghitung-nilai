@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -40,15 +39,24 @@ export default function ForgotPasswordPage() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    const result = await signIn("credentials", {
-      callbackUrl: "/",
-      ...data,
-      redirect: false,
+    const result = await fetch("/api/users/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: data.email,
+      }),
     });
-    if (!result?.ok) {
-      toast.error("Gagal masuk. Periksa kembali email dan password Anda.");
+
+    const parsedResult = await result.json();
+
+    if (!result.ok) {
+      toast.error(parsedResult.message || "Terjadi kesalahan.");
     } else {
-      toast.success("Berhasil masuk!");
+      toast.success(
+        "Email reset password berhasil dikirim! Periksa email Anda."
+      );
       form.reset();
       router.push("/");
     }

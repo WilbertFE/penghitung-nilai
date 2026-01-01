@@ -11,17 +11,19 @@ import zxcvbn from "zxcvbn";
 const Schemas = z.object({
   full_name: z
     .string()
+    .trim()
     .min(3, "Nama harus setidaknya 3 karakter")
-    .max(64, "Nama paling banyak 64 karakter.")
-    .transform((v) => v.trim()),
+    .max(64, "Nama paling banyak 64 karakter."),
   username: z
     .string()
+    .trim()
     .min(3, "Username harus setidaknya 3 karakter.")
     .max(32, "Username paling banyak 32 karakter.")
-    .transform((v) => v.toLowerCase().trim()),
+    .transform((v) => v.toLowerCase()),
   email: z
     .email("Email tidak valid.")
-    .transform((v) => v.toLocaleLowerCase().trim()),
+    .trim()
+    .transform((v) => v.toLowerCase()),
   password: z
     .string()
     .min(8, "Password harus setidaknya 8 karakter.")

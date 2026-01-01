@@ -29,18 +29,24 @@ const formSchema = z
   .object({
     full_name: z
       .string()
+      .trim()
       .min(3, "Nama harus setidaknya 3 karakter")
       .max(64, "Nama paling banyak 64 karakter."),
     username: z
       .string()
+      .trim()
       .min(3, "Username harus setidaknya 3 karakter.")
-      .max(32, "Username paling banyak 32 karakter."),
-    email: z.email("Email tidak valid."),
+      .max(32, "Username paling banyak 32 karakter.")
+      .transform((v) => v.toLowerCase()),
+    email: z
+      .email("Email tidak valid.")
+      .trim()
+      .transform((v) => v.toLowerCase()),
     password: z
       .string()
       .min(8, "Password harus setidaknya 8 karakter.")
       .max(64, "Password paling banyak 64 karakter.")
-      .refine((value) => zxcvbn(value).score >= 3, {
+      .refine((v) => zxcvbn(v).score >= 3, {
         message: "Password terlalu lemah.",
       }),
     confirmPassword: z
@@ -78,6 +84,8 @@ export default function SignUpWithEmailPage() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
+
+      console.log("Submitting data:", data);
 
       const response = await fetch("/api/users", {
         method: "POST",

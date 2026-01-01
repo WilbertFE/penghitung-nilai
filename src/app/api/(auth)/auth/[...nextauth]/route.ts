@@ -10,7 +10,8 @@ import * as z from "zod";
 const Schemas = z.object({
   email: z
     .email("Email tidak valid.")
-    .transform((v) => v.toLocaleLowerCase().trim()),
+    .trim()
+    .transform((v) => v.toLowerCase()),
   password: z.string().min(1, "Password wajib diisi."),
 });
 

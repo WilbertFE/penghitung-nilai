@@ -28,8 +28,8 @@ import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
-  email: z.email("Email tidak valid."),
-  password: z.string().min(1, "Password wajib diisi."),
+  email: z.email("Email tidak valid.").trim(),
+  password: z.string().trim().min(1, "Password wajib diisi."),
 });
 export default function SignInPage() {
   const form = useForm<z.infer<typeof formSchema>>({
