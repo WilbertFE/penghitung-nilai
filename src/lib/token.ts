@@ -2,6 +2,7 @@
 import { getVerificationTokenByEmail } from "@/data/verification-token";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
+import crypto from "crypto";
 
 export const generateVerificationToken = async (email: string) => {
   // Generate random token
@@ -16,10 +17,11 @@ export const generateVerificationToken = async (email: string) => {
   }
 
   //   create verification token
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const { data: verificationToken, error } = await supabase
     .from("tokens")
     .insert({
-      token,
+      token: hashedToken,
       email,
       expires: new Date(expires),
       type: "EMAIL_VERIFICATION",
@@ -29,7 +31,7 @@ export const generateVerificationToken = async (email: string) => {
 
   if (error) throw error;
 
-  return verificationToken;
+  return { ...verificationToken, token };
 };
 
 export const generatePasswordResetToken = async (email: string) => {

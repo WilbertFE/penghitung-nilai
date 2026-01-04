@@ -2,10 +2,12 @@
 
 import supabase from "@/lib/supabase";
 import { getVerificationTokenByToken } from "@/data/verification-token";
+import crypto from "crypto";
 
 export const newVerification = async (token: string) => {
   try {
-    const existingToken = await getVerificationTokenByToken(token);
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const existingToken = await getVerificationTokenByToken(hashedToken);
 
     if (!existingToken) {
       return { error: "Invalid token" };
