@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getVerificationTokenByEmail } from "@/data/verification-token";
+import { getTokenByEmailAndType } from "@/data/verification-token";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
 import crypto from "crypto";
@@ -10,7 +10,10 @@ export const generateVerificationToken = async (email: string) => {
   const expires = new Date().getTime() + 1000 * 60 * 60 * 1; // 1 hours
 
   // Check if the token already exists for the user
-  const existingToken: any = await getVerificationTokenByEmail(email);
+  const existingToken: any = await getTokenByEmailAndType(
+    email,
+    "EMAIL_VERIFICATION"
+  );
 
   if (existingToken) {
     await supabase.from("tokens").delete().eq("id", existingToken.id);
@@ -41,17 +44,21 @@ export const generatePasswordResetToken = async (email: string) => {
   const expires = new Date().getTime() + fifteenMinutes; // 15 minutes
 
   // Check if the token already exists for the user
-  const existingToken: any = await getVerificationTokenByEmail(email);
+  const existingToken: any = await getTokenByEmailAndType(
+    email,
+    "EMAIL_VERIFICATION"
+  );
 
   if (existingToken) {
     await supabase.from("tokens").delete().eq("id", existingToken.id);
   }
 
   //   create verification token
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const { data: resetPasswordToken, error } = await supabase
     .from("tokens")
     .insert({
-      token,
+      token: hashedToken,
       email,
       expires: new Date(expires),
       type: "PASSWORD_RESET",
@@ -61,5 +68,5 @@ export const generatePasswordResetToken = async (email: string) => {
 
   if (error || !resetPasswordToken) throw error;
 
-  return resetPasswordToken;
+  return { ...resetPasswordToken, token };
 };

@@ -1,11 +1,17 @@
-import { getVerificationTokenByToken } from "@/data/verification-token";
+import { getTokenByTokenAndType } from "@/data/verification-token";
 import supabase from "@/lib/supabase";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export const resetPassword = async (token: string, password: string) => {
   try {
     // Cek token
-    const existingToken = await getVerificationTokenByToken(token);
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const existingToken = await getTokenByTokenAndType(
+      hashedToken,
+      "PASSWORD_RESET"
+    );
     if (!existingToken) {
       return { message: "Invalid token", ok: false };
     }
