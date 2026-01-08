@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { FormSuccess } from "@/components/auth/form-success";
@@ -9,6 +9,7 @@ import { newVerification } from "@/../actions/new-verification";
 export default function VerifyEmailFormInner() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -23,8 +24,13 @@ export default function VerifyEmailFormInner() {
       .then((data: any) => {
         if (!isMounted) return;
 
-        if (data?.success) setSuccess(data.success);
-        else if (data?.error) setError(data.error);
+        if (data?.success) {
+          setSuccess(data.success);
+          // Redirect setelah 3 detik
+          setTimeout(() => {
+            router.push("/signin");
+          }, 3000);
+        } else if (data?.error) setError(data.error);
         else setError("Invalid verification response");
       })
       .catch(() => {
