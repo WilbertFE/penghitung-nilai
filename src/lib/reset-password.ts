@@ -1,16 +1,68 @@
-import { Resend } from "resend";
+import { getTokenByTokenAndType } from "./verification-token";
+import supabase from "@/lib/supabase";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const resetPassword = async (token: string, password: string) => {
+  try {
+    // Cek token
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-const domain = process.env.RESEND_DOMAIN || "";
+    const existingToken = await getTokenByTokenAndType(
+      hashedToken,
+      "PASSWORD_RESET",
+    );
+    if (!existingToken) {
+      return { message: "Invalid token", ok: false };
+    }
 
-export const sendResetPasswordEmail = async (email: string, token: string) => {
-  const confirmationLink = `${domain}/reset-password?token=${token}`;
+    const hasExpired = new Date(existingToken.expires) < new Date();
 
-  await resend.emails.send({
-    from: "onboarding@resend.dev",
-    to: email,
-    subject: "Reset your password",
-    html: `<p>Click <a href="${confirmationLink}">here</a> to reset your password</p>`,
-  });
+    if (hasExpired) {
+      return { message: "Token has expired", ok: false };
+    }
+
+    const { data: existingUser, error } = await supabase
+      .from("users")
+      .select("email")
+      .eq("email", existingToken.email)
+      .maybeSingle();
+
+    if (error) {
+      return { message: "Server error", ok: false };
+    }
+
+    if (!existingUser) {
+      return { message: "User not found", ok: false };
+    }
+
+    const now = new Date();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({
+        password: hashedPassword,
+        updated_at: now,
+      })
+      .eq("email", existingUser.email);
+
+    if (updateError) {
+      return { message: "Failed to update password", ok: false };
+    }
+
+    const { error: deleteError } = await supabase
+      .from("tokens")
+      .delete()
+      .eq("id", existingToken.id);
+
+    if (deleteError) {
+      return { message: "Failed to delete token", ok: false };
+    }
+
+    return { message: "Password has been reset successfully", ok: true };
+  } catch (error) {
+    console.error(error);
+    return { message: "Failed to reset password", ok: false };
+  }
 };

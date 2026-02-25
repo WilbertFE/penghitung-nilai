@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import * as z from "zod";
 import zxcvbn from "zxcvbn";
-import { resetPassword } from "../../../../../../actions/reset-password";
+import { resetPassword } from "../../../../../lib/reset-password";
 
 const formSchema = z.object({
   password: z
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (!parsedBody.success) {
       return Response.json(
         { message: "Password tidak valid." },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // Lakukan logika reset password di sini
@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
     if (!response?.ok) {
       return Response.json(
         { message: response?.message || "Failed to reset password" },
-        { status: 500 }
+        { status: 500 },
       );
     }
     return Response.json(
       { message: "Password has been reset successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);

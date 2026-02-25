@@ -1,4 +1,4 @@
-import { sendResetPasswordEmail } from "@/lib/reset-password";
+import { sendResetPasswordEmail } from "@/lib/reset-password-mail";
 import supabase from "@/lib/supabase";
 import { generatePasswordResetToken } from "@/lib/token";
 import { NextRequest } from "next/server";
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!existingUser || error) {
       return Response.json(
         { message: "Email tidak ditemukan." },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // Here you would typically generate a reset token and send an email
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (!generateResetToken) {
       return Response.json(
         { message: "Gagal membuat token reset password." },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -45,13 +45,13 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       { message: `Email reset password telah dikirim ke ${email}.` },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
     return Response.json(
       { message: "Terjadi kesalahan saat memproses permintaan." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

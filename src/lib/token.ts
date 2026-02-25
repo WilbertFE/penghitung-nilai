@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getTokenByEmailAndType } from "@/data/verification-token";
+import { getTokenByEmailAndType } from "./verification-token";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
 import crypto from "crypto";
@@ -12,7 +12,7 @@ export const generateVerificationToken = async (email: string) => {
   // Check if the token already exists for the user
   const existingToken: any = await getTokenByEmailAndType(
     email,
-    "EMAIL_VERIFICATION"
+    "EMAIL_VERIFICATION",
   );
 
   if (existingToken) {
@@ -46,7 +46,7 @@ export const generatePasswordResetToken = async (email: string) => {
   // Check if the token already exists for the user
   const existingToken: any = await getTokenByEmailAndType(
     email,
-    "EMAIL_VERIFICATION"
+    "EMAIL_VERIFICATION",
   );
 
   if (existingToken) {

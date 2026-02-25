@@ -1,7 +1,7 @@
 "use server";
 
 import supabase from "@/lib/supabase";
-import { getTokenByTokenAndType } from "@/data/verification-token";
+import { getTokenByTokenAndType } from "./verification-token";
 import crypto from "crypto";
 
 export const newVerification = async (token: string) => {
@@ -9,7 +9,7 @@ export const newVerification = async (token: string) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const existingToken = await getTokenByTokenAndType(
       hashedToken,
-      "EMAIL_VERIFICATION"
+      "EMAIL_VERIFICATION",
     );
 
     if (!existingToken) {

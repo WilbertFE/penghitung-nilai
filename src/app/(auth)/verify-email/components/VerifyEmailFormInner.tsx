@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { FormSuccess } from "@/components/auth/form-success";
 import { FormError } from "@/components/auth/form-error";
-import { newVerification } from "@/../actions/new-verification";
+import { newVerification } from "@/lib/new-verification";
 
 export default function VerifyEmailFormInner() {
   const [success, setSuccess] = useState<string | null>(null);
