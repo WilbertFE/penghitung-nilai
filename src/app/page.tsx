@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-export default function DashboardPage() {
+export default function HomePage() {
   return (
-    <div className="">
-      <h1>Dashboard</h1>
+    <div>
+      <h1>Hello World!</h1>
     </div>
   );
 }

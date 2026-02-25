@@ -56,10 +56,11 @@ export default function SignInPage() {
     } else {
       toast.success("Berhasil masuk!");
       form.reset();
-      router.push("/");
+      router.push("/dashboard");
     }
     setIsLoading(false);
   }
+
   const handleGoogle = async () => {
     setIsLoading(true);
     const result = await signIn("google", { callbackUrl: "/" });
@@ -68,6 +69,7 @@ export default function SignInPage() {
       toast.error("Terjadi kesalahan.");
     } else {
       toast.success("Berhasil masuk!");
+      router.push("/dashboard");
     }
 
     setIsLoading(false);
