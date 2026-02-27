@@ -57,15 +57,15 @@ function SidebarContent() {
   return (
     <div className="flex h-full flex-col">
       {/* Logo wordmark */}
-      <div className="flex h-[57px] shrink-0 items-center gap-2.5 border-b border-sidebar-border px-4">
-        <div className="flex h-[26px] w-[26px] items-center justify-center rounded-md bg-primary">
+      <div className="flex h-14.25 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-4">
+        <div className="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-primary">
           <GraduationCap
             className="h-3.5 w-3.5 text-primary-foreground"
             aria-hidden="true"
           />
         </div>
         <span className="text-[13px] font-semibold tracking-tight text-sidebar-foreground">
-          GradeTracker
+          Arkiva
         </span>
       </div>
 
@@ -88,7 +88,7 @@ function SidebarContent() {
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "group flex items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[13px] transition-colors",
+                        "group flex items-center gap-2.5 rounded-md px-2.5 py-1.75 text-[13px] transition-colors",
                         active
                           ? "bg-sidebar-accent text-sidebar-foreground font-medium"
                           : "font-normal text-sidebar-foreground/55 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
@@ -96,7 +96,7 @@ function SidebarContent() {
                     >
                       <Icon
                         className={cn(
-                          "h-[15px] w-[15px] shrink-0",
+                          "h-3.75 w-3.75 shrink-0",
                           active
                             ? "text-primary"
                             : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70",
@@ -115,9 +115,9 @@ function SidebarContent() {
 
       {/* Logout footer */}
       <div className="shrink-0 border-t border-sidebar-border px-2 py-2">
-        <button className="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[13px] text-sidebar-foreground/55 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-foreground">
+        <button className="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.75 text-[13px] text-sidebar-foreground/55 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-foreground">
           <LogOut
-            className="h-[15px] w-[15px] shrink-0 text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70"
+            className="h-3.75 w-3.75 shrink-0 text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70"
             aria-hidden="true"
           />
           Log out
@@ -131,7 +131,7 @@ function SidebarContent() {
 
 export function Sidebar() {
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[220px] flex-col bg-sidebar lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-55 flex-col bg-sidebar lg:flex">
       <SidebarContent />
     </aside>
   );
@@ -149,7 +149,7 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="left"
-        className="w-[220px] p-0 bg-sidebar border-r border-sidebar-border"
+        className="w-55 p-0 bg-sidebar border-r border-sidebar-border"
       >
         <VisuallyHidden>
           <SheetTitle>Navigation</SheetTitle>

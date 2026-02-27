@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Penghitung Nilai",
+  title: "Arkiva",
   description: "Created by Wilbert Bernardi",
 };
 
